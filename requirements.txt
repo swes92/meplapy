@@ -1,0 +1,6 @@
+pdfplumber
+nltk
+argparse
+geopy
+folium
+pandas

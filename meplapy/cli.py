@@ -5,6 +5,7 @@ from meplapy.ner import extract_locations
 from meplapy.geocoder import geocode_locations
 from meplapy.mapper import create_map, create_csv
 from meplapy.iplookup import extract_ip_addresses, geolocate_ip, save_ip_info_to_csv
+from meplapy.coordinates import extract_coordinates_with_context
 
 
 def main():
@@ -15,12 +16,14 @@ def main():
         "input_file", help="Path to the input document (PDF, TXT, or CSV)"
     )
     parser.add_argument(
-        "--ner", action='store_true', help="Enable NER for location extraction."
+        "--ner", action="store_true", help="Extract and geocode named entities"
     )
     parser.add_argument(
-        "--ip", action='store_true', help="Enable IP address geolocation."
+        "--ip", action="store_true", help="Extract and geolocate IP addresses"
     )
-
+    parser.add_argument(
+        "--co", action="store_true", help="Extract and plot coordinates from the text"
+    )
     args = parser.parse_args()
 
     # Auto-detect file format based on file extension
@@ -62,19 +65,24 @@ def main():
             if geolocation_data:
                 geocoded_ips_with_context.append(geolocation_data)
 
+    # Extract coordinates and their context
+    coordinates_with_context = []
+    if args.co:
+        coordinates_with_context = extract_coordinates_with_context(text)
+
     # Automatically set the output map filename based on the input filename
-    output_map = os.path.splitext(args.input_file)[0] + ".html"
+    output_map = os.path.splitext(args.input_file)[0] + "_mapped.html"
 
     # Save the results if geocoded_locations or geocoded_ips_with_context are not empty
     if geocoded_locations:
-        create_csv(geocoded_locations, output_map)
+        create_csv(geocoded_locations, coordinates_with_context, output_map)
     if geocoded_ips_with_context:
         save_ip_info_to_csv(geocoded_ips_with_context, file_name="ip-scan.csv")
 
     # Generate a map only if there are geocoded locations or IPs
     if geocoded_locations or geocoded_ips_with_context:
         print(f"\nGenerating map and saving to {output_map}...")
-        create_map(geocoded_locations, geocoded_ips_with_context, output_map)
+        create_map(geocoded_locations, geocoded_ips_with_context, coordinates_with_context, output_map)
     else:
         print("No locations or IPs to map.")
 

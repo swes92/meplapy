@@ -2,7 +2,7 @@
 
 **MePlaPy** stands for "Mentioned Places Python." It is a Python package designed to extract, geolocate, and visualize places mentioned in various document formats, such as PDFs, text files, and CSVs. It can help you in OSINT investigations by analyzing documents and creating a spatial understanding of the places mentioned.
 
-![Screenshot of MePlaPy](screen01.jpg)
+![Screenshot of MePlaPy](screen01.JPG)
 
 ## Installation
 

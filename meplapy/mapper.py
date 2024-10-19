@@ -3,7 +3,7 @@ from folium import IFrame
 import pandas as pd
 
 
-def create_map(geocoded_locations_with_context, output_file):
+def create_map(geocoded_locations_with_context, geocoded_ips_with_context, output_file):
     """
     Generate an interactive map with the geocoded locations and their context.
     """
@@ -26,6 +26,25 @@ def create_map(geocoded_locations_with_context, output_file):
             location=coordinates,
             popup=popup,
             tooltip=loc
+        ).add_to(map_object)
+
+        # Add markers for geolocated IP addresses
+    for position, ip_data in geocoded_ips_with_context:
+        coordinates = [ip_data['latitude'], ip_data['longitude']]
+        popup_content = (
+            f"<b>IP Address:</b> {ip_data['ip']}<br>"
+            f"<b>Location:</b> {ip_data['city']}, {ip_data['region']}, {ip_data['country']}<br>"
+            f"<b>ISP:</b> {ip_data['connection']['org']}"  # Adjusted to use the correct path for ISP
+        )
+        iframe = IFrame(popup_content, width=250, height=150)
+        popup = folium.Popup(iframe, max_width=300)
+
+        # Add marker for the IP address
+        folium.Marker(
+            location=coordinates,
+            popup=popup,
+            tooltip=ip_data['ip'],
+            icon=folium.Icon(color='red')  # Red marker for IP addresses
         ).add_to(map_object)
 
     map_object.save(output_file)

@@ -11,6 +11,7 @@ setup(
         'geopy',
         'folium',
         'pandas',
+        'requests',
     ],
     entry_points={
         'console_scripts': [
